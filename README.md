@@ -2,8 +2,8 @@
 
 ## Setup instructions
 
-1. [Linux](#Linux)
-2. [Windows](#Windows)
+1. [Linux](#linux)
+2. [Windows](#windows)
 
 ---
 
@@ -127,9 +127,7 @@ The API should now be running at `http://localhost:5000`.
 
 ---
 
-## Additional Notes
-- Ensure PostgreSQL (or your chosen database) is installed and running.
-- If using SQLite, make sure the database file is accessible.
+## Notes
 - To change the listening port, modify `appsettings.json` or use:
 
   ```bash
