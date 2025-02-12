@@ -133,5 +133,9 @@ The API should now be running at `http://localhost:5000`.
   ```bash
   dotnet run --urls=http://localhost:PORT
   ```
+- Videos to watch
+> https://youtu.be/AhAxLiGC7Pc
+> https://youtu.be/w8I32UPEvj8
+
 
 
