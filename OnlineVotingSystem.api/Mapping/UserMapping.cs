@@ -21,7 +21,6 @@ public static class UserMapping
     {
         return new User
         {
-            Id = Guid.NewGuid(),
             Name = user.Name,
             NationalId = user.NationalId,
             Email = user.Email,
