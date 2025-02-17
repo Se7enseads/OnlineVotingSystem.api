@@ -44,36 +44,45 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
+        Title = "Online Voting System API",
         Version = "v1",
-        Title = "Online Voting System Api",
-        Description = "A secure API for managing online elections, user registration, and voting",
-        TermsOfService = new Uri("https://example.com/terms"),
-        Contact = new OpenApiContact
+        Description = "API for managing elections, candidates, and votes."
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter 'Bearer {your JWT token}'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            Name = "Example Contact",
-            Url = new Uri("https://example.com/contact")
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Example License",
-            Url = new Uri("https://example.com/license")
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
         }
     });
 });
 
 var app = builder.Build();
 
-app.MapUsersEndpoints();
-
-app.MapAuthEndpoints();
-app.UseAuthentication();
-app.UseAuthorization();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapUsersEndpoints();
+
+app.MapAuthEndpoints();
+app.UseAuthentication();
+app.UseAuthorization();
 
 await app.MigrateDbAsync();
 
