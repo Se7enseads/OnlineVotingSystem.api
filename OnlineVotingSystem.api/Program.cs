@@ -79,6 +79,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapUsersEndpoints();
+app.MapElectionsEndpoints();
 
 app.MapAuthEndpoints();
 app.UseAuthentication();
