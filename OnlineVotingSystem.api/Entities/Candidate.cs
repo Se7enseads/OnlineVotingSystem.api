@@ -10,14 +10,17 @@ public class Candidate
 
     [ForeignKey("ElectionPosition")] public Guid ElectionPositionId { get; set; }
 
-    public ElectionPosition? ElectionPosition { get; set; }
+    public required ElectionPosition ElectionPosition { get; set; }
 
-    [StringLength(100)] public required string Name { get; set; }
+    [ForeignKey("User")] public Guid UserId { get; set; }
+
+    public required User User { get; set; }
+
 
     [DefaultValue("independent"), StringLength(100)]
     public string? Party { get; set; }
 
-    [StringLength(255)] public string? Bio { get; set; }
+    [StringLength(255)] public required string Bio { get; set; }
 
-    [StringLength(255)] public string? PhotoUrl { get; set; }
+    [StringLength(255)] public Uri? PhotoUrl { get; set; }
 }

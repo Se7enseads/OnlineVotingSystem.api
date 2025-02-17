@@ -12,23 +12,7 @@ namespace OnlineVotingSystem.api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Elections",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
-                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Elections", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Position",
+                name: "Positions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -36,7 +20,7 @@ namespace OnlineVotingSystem.api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Position", x => x.Id);
+                    table.PrimaryKey("PK_Positions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,6 +41,28 @@ namespace OnlineVotingSystem.api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Elections",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Elections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Elections_Users_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ElectionsPositions",
                 columns: table => new
                 {
@@ -74,9 +80,9 @@ namespace OnlineVotingSystem.api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ElectionsPositions_Position_PositionId",
+                        name: "FK_ElectionsPositions_Positions_PositionId",
                         column: x => x.PositionId,
-                        principalTable: "Position",
+                        principalTable: "Positions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -87,9 +93,9 @@ namespace OnlineVotingSystem.api.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ElectionPositionId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Party = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    Bio = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    Bio = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     PhotoUrl = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
@@ -99,6 +105,12 @@ namespace OnlineVotingSystem.api.Migrations
                         name: "FK_Candidates_ElectionsPositions_ElectionPositionId",
                         column: x => x.ElectionPositionId,
                         principalTable: "ElectionsPositions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -143,10 +155,25 @@ namespace OnlineVotingSystem.api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedAt", "Email", "IsAdmin", "Name", "NationalId", "Password" },
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2024, 2, 11, 12, 0, 0, 0, DateTimeKind.Utc), "admin@system.com", true, "Admin", 10000001, "$2a$11$PlHURX9wlCUp.yY038iuOu6u9k7oMIZ2O6vAwiaRsJtMzYlC8NWby" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Candidates_ElectionPositionId",
                 table: "Candidates",
                 column: "ElectionPositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_UserId",
+                table: "Candidates",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Elections_CreatedBy",
+                table: "Elections",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ElectionsPositions_ElectionId",
@@ -189,16 +216,16 @@ namespace OnlineVotingSystem.api.Migrations
                 name: "Candidates");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "ElectionsPositions");
 
             migrationBuilder.DropTable(
                 name: "Elections");
 
             migrationBuilder.DropTable(
-                name: "Position");
+                name: "Positions");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

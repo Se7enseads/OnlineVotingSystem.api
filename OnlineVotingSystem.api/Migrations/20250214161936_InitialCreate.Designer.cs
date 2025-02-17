@@ -11,7 +11,7 @@ using OnlineVotingSystem.api.Data;
 namespace OnlineVotingSystem.api.Migrations
 {
     [DbContext(typeof(OnlineVotingSystemContext))]
-    [Migration("20250209115946_InitialCreate")]
+    [Migration("20250214161936_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,15 +27,11 @@ namespace OnlineVotingSystem.api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Bio")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("ElectionPositionId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Party")
@@ -46,9 +42,14 @@ namespace OnlineVotingSystem.api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ElectionPositionId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Candidates");
                 });
@@ -78,6 +79,8 @@ namespace OnlineVotingSystem.api.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Elections");
                 });
@@ -116,7 +119,7 @@ namespace OnlineVotingSystem.api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Position");
+                    b.ToTable("Positions");
                 });
 
             modelBuilder.Entity("OnlineVotingSystem.api.Entities.User", b =>
@@ -152,6 +155,18 @@ namespace OnlineVotingSystem.api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2024, 2, 11, 12, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@system.com",
+                            IsAdmin = true,
+                            Name = "Admin",
+                            NationalId = 10000001,
+                            Password = "$2a$11$PlHURX9wlCUp.yY038iuOu6u9k7oMIZ2O6vAwiaRsJtMzYlC8NWby"
+                        });
                 });
 
             modelBuilder.Entity("OnlineVotingSystem.api.Entities.Vote", b =>
@@ -196,7 +211,26 @@ namespace OnlineVotingSystem.api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("OnlineVotingSystem.api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ElectionPosition");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Election", b =>
+                {
+                    b.HasOne("OnlineVotingSystem.api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineVotingSystem.api.Entities.ElectionPosition", b =>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineVotingSystem.api.Entities;
 
@@ -13,5 +14,6 @@ public class Election
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
 
-    public Guid CreatedBy { get; set; }
+    [ForeignKey("User")]public Guid CreatedBy { get; set; }
+    public User? User { get; set; }
 }
