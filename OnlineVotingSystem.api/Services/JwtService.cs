@@ -41,7 +41,8 @@ public class JwtService
             Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim("NationalId", user.NationalId.ToString())
+                new Claim("NationalId", user.NationalId.ToString()),
+                new Claim("IsAdmin", user.IsAdmin.ToString().ToLower())
             ]),
             Expires = tokenExpiryTimeStamp,
             Issuer = issuer,

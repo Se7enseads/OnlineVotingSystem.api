@@ -38,7 +38,7 @@ public static class UsersEndpoints
 
             await dbContext.Users.ExecuteDeleteAsync();
             return Results.Ok("NO SURVIVORS");
-        });
+        }).RequireAuthorization("AdminOnly");
 
         // delete user by id
         group.MapDelete("/{id:guid}", async (Guid id, OnlineVotingSystemContext dbContext) =>
@@ -46,7 +46,7 @@ public static class UsersEndpoints
             await dbContext.Users.Where(user => user.Id == id).ExecuteDeleteAsync();
 
             return Results.NoContent();
-        });
+        }).RequireAuthorization("AdminOnly");
         return group;
     }
 }
