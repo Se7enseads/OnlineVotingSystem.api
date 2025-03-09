@@ -1,3 +1,5 @@
+// Imports
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -7,9 +9,13 @@ using OnlineVotingSystem.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connString = builder.Configuration.GetConnectionString("OnlineVotingSystem");
-builder.Services.AddSqlite<OnlineVotingSystemContext>(connString);
+var connString =
+    builder.Configuration.GetConnectionString("OnlineVotingSystem"); // Connection string from appsettings.json
+builder.Services
+    .AddSqlite<
+        OnlineVotingSystemContext>(connString); // Add SQLite database context from OnlineVotingSystemContext.cs file
 
+// Add JWT authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -17,8 +23,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    var jwtSettings = builder.Configuration.GetSection("JwtConfig");
-    var key = Convert.FromBase64String(jwtSettings["Key"]!);
+    var jwtSettings = builder.Configuration.GetSection("JwtConfig"); // JWT settings from appsettings.json
+    var key = Convert.FromBase64String(jwtSettings["Key"]!); // Convert the key from base64 string to byte array
 
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
@@ -33,15 +39,20 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
     };
 });
-builder.Services.AddAuthorization();
-builder.Services.AddScoped<JwtService>();
+builder.Services.AddAuthorization(); // Add authorization services
+builder.Services.AddScoped<JwtService>(); // Add JWT service for generating and validating JWT tokens
 
+// Add authorization policy for admin-only access
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOnly", policy => policy.RequireClaim("IsAdmin", "true"));
 
+// Add swagger services
 builder.Services.AddEndpointsApiExplorer();
+
+// Configure swagger
 builder.Services.AddSwaggerGen(options =>
 {
+    // Add a security definition for JWT
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Online Voting System API",
@@ -49,6 +60,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for managing elections, candidates, and votes."
     });
 
+    // Add a security definition for JWT to the swagger document
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Enter 'Bearer {your JWT token}'",
@@ -58,6 +70,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer"
     });
 
+    // Add a security requirement for JWT to the swagger document
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -72,20 +85,23 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Create swagger endpoint for development environment
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapUsersEndpoints();
-app.MapElectionsEndpoints();
-app.MapPositionsEndpoints();
+app.MapUsersEndpoints(); // Map users endpoints
+app.MapElectionEndpoints(); // Map elections endpoints
+app.MapPositionEndpoints(); // Map positions endpoints
 
-app.MapAuthEndpoints();
+app.MapAuthEndpoints(); // Map authentication endpoints
+
+// Add authentication and authorization middleware for JWT
 app.UseAuthentication();
 app.UseAuthorization();
 
-await app.MigrateDbAsync();
+await app.MigrateDbAsync(); // Migrate the database to the latest version on app startup
 
-app.Run();
+app.Run(); // Run the application
