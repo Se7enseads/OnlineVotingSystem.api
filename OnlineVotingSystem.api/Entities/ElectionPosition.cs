@@ -10,9 +10,9 @@ public class ElectionPosition
 
     [ForeignKey("Election")] public Guid ElectionId { get; set; }
 
-    public required Election Election { get; set; }
+    public Election? Election { get; set; }
 
     [ForeignKey("Positions")] public Guid PositionId { get; set; }
 
-    public required Position Position { get; set; }
+    public Position? Position { get; set; }
 }
