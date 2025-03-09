@@ -63,7 +63,7 @@ namespace OnlineVotingSystem.api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ElectionsPositions",
+                name: "ElectionPositions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -72,15 +72,15 @@ namespace OnlineVotingSystem.api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ElectionsPositions", x => x.Id);
+                    table.PrimaryKey("PK_ElectionPositions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ElectionsPositions_Elections_ElectionId",
+                        name: "FK_ElectionPositions_Elections_ElectionId",
                         column: x => x.ElectionId,
                         principalTable: "Elections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ElectionsPositions_Positions_PositionId",
+                        name: "FK_ElectionPositions_Positions_PositionId",
                         column: x => x.PositionId,
                         principalTable: "Positions",
                         principalColumn: "Id",
@@ -102,9 +102,9 @@ namespace OnlineVotingSystem.api.Migrations
                 {
                     table.PrimaryKey("PK_Candidates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Candidates_ElectionsPositions_ElectionPositionId",
+                        name: "FK_Candidates_ElectionPositions_ElectionPositionId",
                         column: x => x.ElectionPositionId,
-                        principalTable: "ElectionsPositions",
+                        principalTable: "ElectionPositions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -136,9 +136,9 @@ namespace OnlineVotingSystem.api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Votes_ElectionsPositions_ElectionPositionId",
+                        name: "FK_Votes_ElectionPositions_ElectionPositionId",
                         column: x => x.ElectionPositionId,
-                        principalTable: "ElectionsPositions",
+                        principalTable: "ElectionPositions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -158,7 +158,7 @@ namespace OnlineVotingSystem.api.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "IsAdmin", "Name", "NationalId", "Password" },
-                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2024, 2, 11, 12, 0, 0, 0, DateTimeKind.Utc), "admin@system.com", true, "Admin", 10000001, "$2a$11$PlHURX9wlCUp.yY038iuOu6u9k7oMIZ2O6vAwiaRsJtMzYlC8NWby" });
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2024, 2, 11, 12, 0, 0, 0, DateTimeKind.Utc), "admin@system.com", true, "Admin", 10000001, "$2a$11$McDzAqqk04VkMTWMQmZnw.DR.uCHl/wj23tAKPZBJNSygN2koP8gK" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Candidates_ElectionPositionId",
@@ -171,19 +171,19 @@ namespace OnlineVotingSystem.api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Elections_CreatedBy",
-                table: "Elections",
-                column: "CreatedBy");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ElectionsPositions_ElectionId",
-                table: "ElectionsPositions",
+                name: "IX_ElectionPositions_ElectionId",
+                table: "ElectionPositions",
                 column: "ElectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ElectionsPositions_PositionId",
-                table: "ElectionsPositions",
+                name: "IX_ElectionPositions_PositionId",
+                table: "ElectionPositions",
                 column: "PositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Elections_CreatedBy",
+                table: "Elections",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Votes_CandidateId",
@@ -216,7 +216,7 @@ namespace OnlineVotingSystem.api.Migrations
                 name: "Candidates");
 
             migrationBuilder.DropTable(
-                name: "ElectionsPositions");
+                name: "ElectionPositions");
 
             migrationBuilder.DropTable(
                 name: "Elections");

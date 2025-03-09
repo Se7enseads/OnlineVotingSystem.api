@@ -11,7 +11,7 @@ using OnlineVotingSystem.api.Data;
 namespace OnlineVotingSystem.api.Migrations
 {
     [DbContext(typeof(OnlineVotingSystemContext))]
-    [Migration("20250214161936_InitialCreate")]
+    [Migration("20250308233645_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -103,7 +103,7 @@ namespace OnlineVotingSystem.api.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.ToTable("ElectionsPositions");
+                    b.ToTable("ElectionPositions");
                 });
 
             modelBuilder.Entity("OnlineVotingSystem.api.Entities.Position", b =>
@@ -165,7 +165,7 @@ namespace OnlineVotingSystem.api.Migrations
                             IsAdmin = true,
                             Name = "Admin",
                             NationalId = 10000001,
-                            Password = "$2a$11$PlHURX9wlCUp.yY038iuOu6u9k7oMIZ2O6vAwiaRsJtMzYlC8NWby"
+                            Password = "$2a$11$McDzAqqk04VkMTWMQmZnw.DR.uCHl/wj23tAKPZBJNSygN2koP8gK"
                         });
                 });
 
