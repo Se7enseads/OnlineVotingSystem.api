@@ -95,6 +95,21 @@ public static class ElectionsEndpoints
                 );
             });
 
+        group.MapPatch("/{electionId:guid}",
+            async (Guid electionId, UpdateElectionDto updateDto, OnlineVotingSystemContext dbContext) =>
+            {
+                var election = await dbContext.Elections.FindAsync(electionId);
+                if (election is null)
+                {
+                    return Results.NotFound("Position not found.");
+                }
+
+                election.ApplyUpdates(updateDto);
+                await dbContext.SaveChangesAsync();
+
+                return Results.Ok(election);
+            });
+
         // Delete election by electionId - "http://localhost:PORT/elections/{electionId}" - ADMIN ONLY
         group.MapDelete("/{electionId:guid}", async (Guid electionId, OnlineVotingSystemContext dbContext) =>
         {

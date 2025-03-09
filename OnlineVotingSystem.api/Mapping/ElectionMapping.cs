@@ -17,8 +17,8 @@ public static class ElectionMapping
             election.CreatedBy
         );
     }
-    
-    public static Election ToEntity(this CreateElectionDto election, Guid userId )
+
+    public static Election ToEntity(this CreateElectionDto election, Guid userId)
     {
         return new Election
         {
@@ -29,5 +29,13 @@ public static class ElectionMapping
             EndTime = election.EndTime,
             CreatedBy = userId
         };
+    }
+
+    public static void ApplyUpdates(this Election election, UpdateElectionDto updateElection)
+    {
+        if (!string.IsNullOrWhiteSpace(updateElection.Title)) election.Title = updateElection.Title!;
+        if (!string.IsNullOrWhiteSpace(updateElection.Description)) election.Description = updateElection.Description!;
+        if (updateElection.StartTime.HasValue) election.StartTime = updateElection.StartTime.Value;
+        if (updateElection.EndTime.HasValue) election.EndTime = updateElection.EndTime.Value;
     }
 }
