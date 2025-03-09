@@ -26,3 +26,12 @@ Content-Type: application/json
   "Identifier": "12345678",
   "Password": "Passwords1!"
 }
+
+### Login Admin
+POST localhost:5256/auth/login
+Content-Type: application/json
+
+{
+  "Identifier": "10000001",
+  "Password": "AdminPassword!1234"
+}
