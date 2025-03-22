@@ -11,8 +11,8 @@ using OnlineVotingSystem.api.Data;
 namespace OnlineVotingSystem.api.Migrations
 {
     [DbContext(typeof(OnlineVotingSystemContext))]
-    [Migration("20250308233645_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250322182738_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,9 +178,6 @@ namespace OnlineVotingSystem.api.Migrations
                     b.Property<Guid>("CandidateId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ElectionId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("ElectionPositionId")
                         .HasColumnType("TEXT");
 
@@ -193,8 +190,6 @@ namespace OnlineVotingSystem.api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CandidateId");
-
-                    b.HasIndex("ElectionId");
 
                     b.HasIndex("ElectionPositionId");
 
@@ -260,12 +255,6 @@ namespace OnlineVotingSystem.api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineVotingSystem.api.Entities.Election", "Election")
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OnlineVotingSystem.api.Entities.ElectionPosition", "ElectionPosition")
                         .WithMany()
                         .HasForeignKey("ElectionPositionId")
@@ -279,8 +268,6 @@ namespace OnlineVotingSystem.api.Migrations
                         .IsRequired();
 
                     b.Navigation("Candidate");
-
-                    b.Navigation("Election");
 
                     b.Navigation("ElectionPosition");
 

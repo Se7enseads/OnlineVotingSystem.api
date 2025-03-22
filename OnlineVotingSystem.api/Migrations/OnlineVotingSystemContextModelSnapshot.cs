@@ -17,7 +17,7 @@ namespace OnlineVotingSystem.api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Candidate", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Candidate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace OnlineVotingSystem.api.Migrations
                     b.ToTable("Candidates");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Election", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Election", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace OnlineVotingSystem.api.Migrations
                     b.ToTable("Elections");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.ElectionPosition", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.ElectionPosition", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +103,7 @@ namespace OnlineVotingSystem.api.Migrations
                     b.ToTable("ElectionPositions");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Position", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Position", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,7 +119,7 @@ namespace OnlineVotingSystem.api.Migrations
                     b.ToTable("Positions");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.User", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,16 +166,13 @@ namespace OnlineVotingSystem.api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Vote", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Vote", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("CandidateId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ElectionId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("ElectionPositionId")
@@ -191,8 +188,6 @@ namespace OnlineVotingSystem.api.Migrations
 
                     b.HasIndex("CandidateId");
 
-                    b.HasIndex("ElectionId");
-
                     b.HasIndex("ElectionPositionId");
 
                     b.HasIndex("UserId");
@@ -200,15 +195,15 @@ namespace OnlineVotingSystem.api.Migrations
                     b.ToTable("Votes");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Candidate", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Candidate", b =>
                 {
-                    b.HasOne("OnlineVotingSystem.Entities.ElectionPosition", "ElectionPosition")
+                    b.HasOne("OnlineVotingSystem.api.Entities.ElectionPosition", "ElectionPosition")
                         .WithMany()
                         .HasForeignKey("ElectionPositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineVotingSystem.Entities.User", "User")
+                    b.HasOne("OnlineVotingSystem.api.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -219,9 +214,9 @@ namespace OnlineVotingSystem.api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Election", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Election", b =>
                 {
-                    b.HasOne("OnlineVotingSystem.Entities.User", "User")
+                    b.HasOne("OnlineVotingSystem.api.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -230,15 +225,15 @@ namespace OnlineVotingSystem.api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.ElectionPosition", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.ElectionPosition", b =>
                 {
-                    b.HasOne("OnlineVotingSystem.Entities.Election", "Election")
+                    b.HasOne("OnlineVotingSystem.api.Entities.Election", "Election")
                         .WithMany()
                         .HasForeignKey("ElectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineVotingSystem.Entities.Position", "Position")
+                    b.HasOne("OnlineVotingSystem.api.Entities.Position", "Position")
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -249,35 +244,27 @@ namespace OnlineVotingSystem.api.Migrations
                     b.Navigation("Position");
                 });
 
-            modelBuilder.Entity("OnlineVotingSystem.Entities.Vote", b =>
+            modelBuilder.Entity("OnlineVotingSystem.api.Entities.Vote", b =>
                 {
-                    b.HasOne("OnlineVotingSystem.Entities.Candidate", "Candidate")
+                    b.HasOne("OnlineVotingSystem.api.Entities.Candidate", "Candidate")
                         .WithMany()
                         .HasForeignKey("CandidateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineVotingSystem.Entities.Election", "Election")
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OnlineVotingSystem.Entities.ElectionPosition", "ElectionPosition")
+                    b.HasOne("OnlineVotingSystem.api.Entities.ElectionPosition", "ElectionPosition")
                         .WithMany()
                         .HasForeignKey("ElectionPositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineVotingSystem.Entities.User", "User")
+                    b.HasOne("OnlineVotingSystem.api.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Candidate");
-
-                    b.Navigation("Election");
 
                     b.Navigation("ElectionPosition");
 
