@@ -24,10 +24,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build OnlineVotingSystem.api/OnlineVotingSystem.api/OnlineVotingSystem.api.csproj --configuration Release
+        run: dotnet build OnlineVotingSystem.api/OnlineVotingSystem.api.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish OnlineVotingSystem.api/OnlineVotingSystem.api/OnlineVotingSystem.api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish OnlineVotingSystem.api/OnlineVotingSystem.api.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -43,7 +43,7 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write # Required for requesting the JWT
-      contents: read # Required for actions/checkout
+      contents: read  # Required for actions/checkout
 
     steps:
       - name: Download artifact from build job
