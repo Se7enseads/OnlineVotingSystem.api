@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using OnlineVotingSystem.api.Data;
 using OnlineVotingSystem.api.DTOs.Candidate;
 using OnlineVotingSystem.api.Mapping;
+using OnlineVotingSystem.api.Entities;
+using OnlineVotingSystem.api.DTOs.Election;
+
 
 namespace OnlineVotingSystem.api.Endpoints;
 
@@ -42,68 +45,84 @@ public static class CandidateEndpoints
         // Create Candidate Admin only
         group.MapPost("/", async (CreateCandidateDto newCandidate, OnlineVotingSystemContext dbContext) =>
         {
+            // Find user by national id
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.NationalId.ToString() == newCandidate.NationalId.Trim()); //Trim() for consistency
+            if(user == null) return Results.BadRequest("Invalid National ID (user not found)"); 
+            if(user.IsAdmin) return Results.BadRequest("Admins cannot be candidates");
+
+            // FIND & VALIDATE ELECTIONID AND POSITIONID COMBO
             var electionPosition = await dbContext.ElectionPositions
-                .Include(ep => ep.Election) // Include the Election to access its ID
-                .FirstOrDefaultAsync(ep => ep.Id == newCandidate.ElectionPositionId);
-            if (electionPosition == null)
+                .FirstOrDefaultAsync(_ => 
+                    _.PositionId == newCandidate.PositionId && 
+                    _.ElectionId == newCandidate.ElectionId);
+            
+            if(electionPosition == null)
             {
-                return Results.BadRequest("Invalid ElectionPosition ID.");
+                return Results.BadRequest("Invalid Position ID or Election ID in the election"); 
             }
 
-            // Validate if User exists
-            var user = await dbContext.Users.FindAsync(newCandidate.UserId);
-            if (user == null)
-            {
-                return Results.BadRequest("Invalid User ID.");
-            }
-
-            var electionId = electionPosition.Election!.Id;
-
-            // Check if the user is already a candidate in the same election
+            // Check for existing candidate
             var alreadyCandidate = await dbContext.Candidates
-                .AnyAsync(c => c.UserId == newCandidate.UserId && c.ElectionPosition!.ElectionId == electionId);
+                .AnyAsync(c => c.UserId == user.Id && //check using ElectionPositionId
+                            c.ElectionPositionId == electionPosition.Id); 
 
-            if (alreadyCandidate)
+            if(alreadyCandidate)
             {
-                return Results.Conflict("This user is already a candidate in this election.");
+                return Results.Conflict("This user is already a candidate for this position in the specified election");
             }
 
             // Convert DTO to Entity
-            var candidate = newCandidate.ToEntity(user.Id, electionPosition.Id);
+            var candidate =newCandidate.ToEntity(user.Id, electionPosition.Id);
 
             // Save candidate to DB
             dbContext.Candidates.Add(candidate);
             await dbContext.SaveChangesAsync();
 
-            return Results.CreatedAtRoute("getElections", new { id = candidate.Id },
+            return Results.CreatedAtRoute("getElections", new { id = candidate.Id }, //FIX: Changed to getCandidate route
                 candidate.ToCandidateSerializedDto()); 
         }).RequireAuthorization("AdminOnly");
 
         // Edit candidate
         group.MapPatch("/{candidateId:guid}",
-            async (Guid candidateId,
-                UpdateCandidateDto updateDto,
-                OnlineVotingSystemContext dbContext) =>
+        async (Guid candidateId,
+            UpdateCandidateDto updateDto,
+            OnlineVotingSystemContext dbContext) =>
+        {
+            // Find the candidate
+            var candidate = await dbContext.Candidates
+                .FirstOrDefaultAsync(c => c.Id == candidateId);
+
+            if (candidate == null)
             {
-                // Find the candidate
-                var candidate = await dbContext.Candidates
-                    .FirstOrDefaultAsync(c => c.Id == candidateId);
+                return Results.NotFound("Candidate not found.");
+            }
 
-                if (candidate == null)
-                {
-                    return Results.NotFound("Candidate not found.");
-                }
+            // Update candidate details
+            if (!string.IsNullOrEmpty(updateDto.Bio)) candidate.Bio = updateDto.Bio;
+            
+            ElectionPosition? electionPosition = null;
 
-                // Update candidate details
-                if (!string.IsNullOrEmpty(updateDto.Bio)) candidate.Bio = updateDto.Bio;
-                if (!string.IsNullOrEmpty(updateDto.Party)) candidate.Party = updateDto.Party;
-                if (updateDto.PhotoUrl is not null) candidate.PhotoUrl = updateDto.PhotoUrl;
+            if (updateDto.PositionId.HasValue)
+            {
+                electionPosition = await dbContext.ElectionPositions
+                    .FirstOrDefaultAsync(ep => ep.PositionId == updateDto.PositionId.Value);
 
-                // Save changes
-                await dbContext.SaveChangesAsync();
+                if (electionPosition ==null) return Results.NotFound("Invalid PositionId. No matching ElectionPosition found.");
+                
+                
+                candidate.ElectionPositionId = electionPosition.Id; // FIXED POSITION NOT UPDATING BUG!!
+            }
 
-                return Results.Ok(candidate.ToCandidateDetailsDto());
-            }).RequireAuthorization("AdminOnly");
+            if (!string.IsNullOrEmpty(updateDto.Party)) candidate.Party = updateDto.Party;
+            if (updateDto.PhotoUrl is not null) candidate.PhotoUrl = updateDto.PhotoUrl;
+
+            // Save changes
+            await dbContext.SaveChangesAsync();
+
+            return Results.Ok(candidate.ToCandidateDetailsDto());
+        }).RequireAuthorization("AdminOnly");
+
 
 
         // Delete candidate

@@ -1,5 +1,10 @@
 # Online Voting System - API
 
+## 🖼️ Embedded Diagram (GitHub)
+
+![Diagram](https://github.com/Flow-Pie/OnlineVotingSystem.api/blob/main/OnlineVotingSystem.api/executionDiagram.svg)
+
+
 ## Setup instructions
 
 1. [Linux](#linux)
